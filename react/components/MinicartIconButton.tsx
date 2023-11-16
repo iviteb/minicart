@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ButtonWithIcon } from 'vtex.styleguide'
 import { useOrderForm } from 'vtex.order-manager/OrderForm'
 import { useCheckoutURL } from 'vtex.checkout-resources/Utils'
@@ -7,6 +7,8 @@ import styles from '../styles.css'
 import { useMinicartCssHandles } from './CssHandlesContext'
 import { useMinicartDispatch, useMinicartState } from '../MinicartContext'
 import useCheckout from '../modules/checkoutHook'
+import { fetchWithRetry } from '../legacy/utils/fetchWithRetry'
+import { PackagesSkuIds } from '../typings/packages-sku-ids'
 
 export const CSS_HANDLES = [
   'minicartIconContainer',
@@ -22,10 +24,16 @@ interface Props {
 
 const countCartItems = (
   countMode: MinicartTotalItemsType,
-  allItems: OrderFormItem[]
+  allItems: OrderFormItem[],
+  packagesSkuIds: string[]
 ) => {
   // Filter only main products, remove assembly items from the count
-  const items = allItems.filter(item => item.parentItemIndex === null)
+  const items = allItems.filter(
+    item =>
+      item.parentItemIndex === null &&
+      item.productId &&
+      !packagesSkuIds.includes(item.productId)
+  )
 
   if (countMode === 'distinctAvailable') {
     return items.reduce((itemQuantity: number, item) => {
@@ -61,7 +69,32 @@ const MinicartIconButton: React.FC<Props> = props => {
   const { handles } = useMinicartCssHandles()
   const { open, openBehavior, openOnHoverProp } = useMinicartState()
   const dispatch = useMinicartDispatch()
-  const quantity = countCartItems(itemCountMode, orderForm.items)
+  const [packagesSkuIds, setPackagesSkuIds] = useState<string[]>([])
+
+  useEffect(() => {
+    let isSubscribed = true
+
+    fetchWithRetry('/_v/private/api/cart-bags-manager/app-settings', 3).then(
+      (res: PackagesSkuIds) => {
+        if (res && isSubscribed) {
+          try {
+            setPackagesSkuIds(Object.values(res.data))
+          } catch (error) {
+            console.error('Error in packages feature.', error)
+          }
+        }
+      }
+    )
+
+    return () => {
+      isSubscribed = false
+    }
+  }, [])
+  const quantity = countCartItems(
+    itemCountMode,
+    orderForm.items,
+    packagesSkuIds
+  )
   const itemQuantity = loading ? 0 : quantity
   const { url: checkoutUrl } = useCheckoutURL()
   const goToCheckout = useCheckout()
