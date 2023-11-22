@@ -4,7 +4,6 @@ import { OrderForm as OrderFormComponent } from 'vtex.order-manager'
 import { useCssHandles, CssHandlesTypes } from 'vtex.css-handles'
 
 import { fetchWithRetry } from './legacy/utils/fetchWithRetry'
-import { PackagesSkuIds } from './typings/packages-sku-ids'
 
 const CSS_HANDLES = ['minicartSummary'] as const
 
@@ -63,7 +62,7 @@ const Summary: FC<Props> = ({ classes }) => {
     const totalizerItems = newTotalizers.find((t: any) => t.id === 'Items')
 
     newTotalizers.push({
-      id: 'Fleg',
+      id: 'Packaging',
       name: 'Taxa ambalare',
       value: flegValue,
       __typename: 'Totalizer',

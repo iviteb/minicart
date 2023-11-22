@@ -8,7 +8,6 @@ import { useMinicartCssHandles } from './CssHandlesContext'
 import { useMinicartDispatch, useMinicartState } from '../MinicartContext'
 import useCheckout from '../modules/checkoutHook'
 import { fetchWithRetry } from '../legacy/utils/fetchWithRetry'
-import { PackagesSkuIds } from '../typings/packages-sku-ids'
 
 export const CSS_HANDLES = [
   'minicartIconContainer',

@@ -1,4 +1,4 @@
-export type PackagesSkuIds = {
+interface PackagesSkuIds {
   data: {
     bioFlegBagId: string
     insulationBagId: string
