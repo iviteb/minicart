@@ -19,6 +19,5 @@
   "store/minicart.checkout-failure": "A apărut o eroare. Te rugăm să încerci din nou.",
   "store/minicart.go-to-checkout": "Finalizează comanda",
   "store/minicart.empty-state": "Coșul tău de cumpărături este gol.",
-  "store/minicart.title": "Coș de cumpărături",
-  "store/checkout-summary.Packaging": "Estimare cost ambalare"
+  "store/minicart.title": "Coș de cumpărături"
 }
